@@ -15,10 +15,11 @@ module.exports = async (req, res, next) => {
     next();
 
   } catch (e) {
-    _authError();
+    _authError(e);
   }
 
-  function _authError() {
-    next('Invalid Login');
+  function _authError(e) {
+   console.log(e.message);
+    next('Bearer Invalid Login');
   }
 };
