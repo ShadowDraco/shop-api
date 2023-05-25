@@ -5,13 +5,19 @@ const dataModules = require('../models');
 
 const router = express.Router();
 
-router.param('model', (req, res, next) => {
+router.param("model", (req, res, next) => {
   const modelName = req.params.model;
+
   if (dataModules[modelName]) {
-    req.model = dataModules[modelName];
+    //* If the model being searched for is the conflicted one set it to the right model */
+    if (modelName === "users") {
+      req.model = userModule;
+    } else {
+      req.model = dataModules[modelName];
+    }
     next();
   } else {
-    next('Invalid Model');
+    next("Invalid Model");
   }
 });
 
@@ -53,3 +59,4 @@ async function handleDelete(req, res) {
 
 
 module.exports = router;
+

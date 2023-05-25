@@ -10,12 +10,11 @@ class DataCollection {
     this.model = model;
   }
 
-  get(id) {
+  async get(id) {
     if (id) {
-      return this.model.findOne({ where: { id } });
-    }
-    else {
-      return this.model.findAll({});
+      return await this.model.findOne({ where: { id } });
+    } else {
+      return await this.model.findAll({});
     }
   }
 

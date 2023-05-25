@@ -32,7 +32,12 @@ const userModel = (sequelize, DataTypes) => {
         return acl[this.role];
       },
     },
+    cart: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      defaultValue: [],
+    },
   });
+
 
   model.beforeCreate(async (user) => {
     let hashedPass = await bcrypt.hash(user.password, 10);
@@ -56,8 +61,13 @@ const userModel = (sequelize, DataTypes) => {
       throw new Error(e.message);
     }
   };
+  model.getCart = async () => {
+    return this.cart;
+    };
 
   return model;
 };
 
 module.exports = userModel;
+
+
