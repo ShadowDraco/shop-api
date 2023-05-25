@@ -1,7 +1,6 @@
 "use strict";
 
 process.env.SECRET = "TEST_SECRET";
-process.env.NODE_ENV = "test";
 
 const supertest = require("supertest");
 
