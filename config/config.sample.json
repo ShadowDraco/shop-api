@@ -2,7 +2,7 @@
   "development": {
     "username": "<username>",
     "password": null,
-    "database": "<your-database-name>",
+    "database": "auth-shop",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
