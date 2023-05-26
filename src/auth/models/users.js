@@ -1,15 +1,23 @@
-'use strict';
+"use strict";
 
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
-const SECRET = process.env.SECRET || 'secretstring';
+const SECRET = process.env.SECRET || "secretstring";
 
 const userModel = (sequelize, DataTypes) => {
-  const model = sequelize.define('Users', {
+  const model = sequelize.define("Users", {
     username: { type: DataTypes.STRING, required: true, unique: true },
     password: { type: DataTypes.STRING, required: true },
-    role: { type: DataTypes.ENUM('user', 'writer', 'editor', 'admin'), required: true, defaultValue: 'user'},
+    role: {
+      type: DataTypes.ENUM("user", "writer", "editor", "admin"),
+      required: true,
+      defaultValue: "user",
+    },
+    cart: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      defaultValue: [],
+    },
     token: {
       type: DataTypes.VIRTUAL,
       get() {
@@ -24,20 +32,15 @@ const userModel = (sequelize, DataTypes) => {
       type: DataTypes.VIRTUAL,
       get() {
         const acl = {
-          user: ['read'],
-          writer: ['read', 'create'],
-          editor: ['read', 'create', 'update'],
-          admin: ['read', 'create', 'update', 'delete'],
+          user: ["read"],
+          writer: ["read", "create"],
+          editor: ["read", "create", "update"],
+          admin: ["read", "create", "update", "delete"],
         };
         return acl[this.role];
       },
     },
-    cart: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      defaultValue: [],
-    },
   });
-
 
   model.beforeCreate(async (user) => {
     let hashedPass = await bcrypt.hash(user.password, 10);
@@ -47,27 +50,49 @@ const userModel = (sequelize, DataTypes) => {
   model.authenticateBasic = async function (username, password) {
     const user = await this.findOne({ where: { username } });
     const valid = await bcrypt.compare(password, user.password);
-    if (valid) { return user; }
-    throw new Error('Invalid User');
+    if (valid) {
+      return user;
+    }
+    throw new Error("Invalid User");
   };
 
   model.authenticateToken = async function (token) {
     try {
       const parsedToken = jwt.verify(token, SECRET);
-      const user = this.findOne({where: { username: parsedToken.username } });
-      if (user) { return user; }
-      throw new Error('User Not Found');
+      const user = this.findOne({ where: { username: parsedToken.username } });
+      if (user) {
+        return user;
+      }
+      throw new Error("User Not Found");
     } catch (e) {
       throw new Error(e.message);
     }
   };
-  model.getCart = async () => {
+
+  model.addToCart = async function (user, item) {
+    try {
+      //* Update CART */
+      //? declare a new array from old one
+      let newCart = Object.assign([], this.cart);
+      //? update the new array
+      newCart.push(item);
+      //* Update the user by overwriting old array with new one */
+      const foundUser = await this.findOne({
+        where: { username: user.username },
+      });
+
+      return foundUser.update({ cart: newCart });
+    } catch (e) {
+      console.log("\nerror adding to Cart in user model\n");
+      throw new Error(e.message);
+    }
+  };
+
+  model.getCart = async function () {
     return this.cart;
-    };
+  };
 
   return model;
 };
 
 module.exports = userModel;
-
-

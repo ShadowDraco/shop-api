@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-const express = require('express');
-const dataModules = require('../models');
+const express = require("express");
+const dataModules = require("../models");
 
 const router = express.Router();
 
@@ -12,8 +12,10 @@ router.param("model", (req, res, next) => {
     //* If the model being searched for is the conflicted one set it to the right model */
     if (modelName === "users") {
       req.model = userModule;
-    } else {
+    } else if (modelName === "requests") {
       req.model = dataModules[modelName];
+    } else {
+      next("Access Denied");
     }
     next();
   } else {
@@ -21,11 +23,16 @@ router.param("model", (req, res, next) => {
   }
 });
 
-router.get('/:model', handleGetAll);
-router.get('/:model/:id', handleGetOne);
-router.post('/:model', handleCreate);
-router.put('/:model/:id', handleUpdate);
-router.delete('/:model/:id', handleDelete);
+router.get("/:model", handleGetAll);
+router.get("/:model/:id", handleGetOne);
+//! Only allow average user to add REQUESTS
+//* Also allow them to create a user otherwise database is inaccessible */
+router.post("/:model", handleCreate);
+//! Remove this functionality to the average user
+/*
+router.put("/:model/:id", handleUpdate);
+router.delete("/:model/:id", handleDelete);
+*/
 
 async function handleGetAll(req, res) {
   let allRecords = await req.model.get();
@@ -57,6 +64,4 @@ async function handleDelete(req, res) {
   res.status(200).json(deletedRecord);
 }
 
-
 module.exports = router;
-
