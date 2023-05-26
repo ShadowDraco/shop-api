@@ -12,7 +12,8 @@ const validateUser = require("./validateUser");
 const { input, select } = require("@inquirer/prompts");
 const { Separator } = require("@inquirer/select");
 
-let token;
+// shared token between inquirer routes
+let token = require("./index");
 
 const chooseRoute = async () => {
   const answer = await select({
