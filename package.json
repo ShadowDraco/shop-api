@@ -12,7 +12,7 @@
     "watch": "NODE_ENV=development nodemon index.js",
     "test:watch": "NODE_ENV=test jest --watchAll",
     "test": "NODE_ENV=test jest --coverage --verbose",
-    "shop": "node ./src/inquirer"
+    "shop": "node --trace-warnings ./src/inquirer"
   },
   "keywords": [],
   "author": "",

@@ -8,14 +8,11 @@ const validateUser = require("./validateUser");
 /*
   //* This prompt guides the user through requesting data from /api/{1/2} /
 */
-
+let token;
 const { input, select } = require("@inquirer/prompts");
 const { Separator } = require("@inquirer/select");
 
-// shared token between inquirer routes
-let token = require("./index");
-
-const chooseRoute = async () => {
+const chooseRoute = async (token) => {
   const answer = await select({
     message: "\n\nSelect a route",
     choices: [
@@ -34,14 +31,14 @@ const chooseRoute = async () => {
   });
 
   //! If the user has not validated their login at least once on this 'shopping spree' make them.
-
+  //* Token is passed through function because requiring it causes circular dependency error */
   if (!token && answer === "v2") {
     const username = await input({ message: "Enter your username:" });
     const password = await input({ message: "Enter your password:" });
     token = await validateUser(username, password);
   }
 
-  return answer;
+  return [answer, token];
 };
 
 const chooseModel = async () => {
@@ -86,7 +83,7 @@ const chooseOneOrAll = async () => {
   return answer;
 };
 
-const getData = async (route, model, amount) => {
+const getData = async (route, model, amount, token) => {
   //? Get the previously chosen model at the previously chosen route */
 
   try {
@@ -112,12 +109,13 @@ const getData = async (route, model, amount) => {
   }
 };
 
-const UserGetPrompt = async () => {
-  const route = await chooseRoute();
+const UserGetPrompt = async (token) => {
+  // Pass token to route chooser
+  const [route, newToken] = await chooseRoute(token);
   const model = await chooseModel();
   const amount = await chooseOneOrAll();
 
-  const data = await getData(route, model, amount);
+  const data = await getData(route, model, amount, newToken);
   console.table(data);
 };
 
