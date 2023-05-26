@@ -1,11 +1,13 @@
-'use strict';
+"use strict";
 
-const express = require('express');
-const dataModules = require('../models');
-const bearerAuth = require('../middleware/bearer');
-const basicAuth = require('../middleware/basic');
+const express = require("express");
+const dataModules = require("../models");
+const acl = require("../auth/middleware/acl");
+const bearerAuth = require("../auth/middleware/bearer");
 const router = express.Router();
-const acl = require('../middleware/acl');
+
+//* Require users to work with the user CART */
+const { users } = require("../models/index");
 
 router.param("model", (req, res, next) => {
   const modelName = req.params.model;
@@ -23,12 +25,15 @@ router.param("model", (req, res, next) => {
   }
 });
 
-router.get('/:model', basicAuth, handleGetAll);
-router.get('/:model/:id', basicAuth, handleGetOne);
-router.post('/:model', bearerAuth, acl ('Require Create'), handleCreate);
-router.put('/:model/:id', bearerAuth, acl ('Require Update'), handleUpdate);
-router.delete('/:model/:id', bearerAuth, acl ('Required Update'), handleDelete);
-router.patch('/:model/:id', bearerAuth, acl ('Delete'), handleUpdate);
+//? Users can only add to their own cart. Bearer authorizes and returns user, handleAdd.. does the adding
+router.post("/add-to-cart", bearerAuth, handleAddToCart);
+
+router.get("/:model", bearerAuth, handleGetAll);
+router.get("/:model/:id", bearerAuth, handleGetOne);
+router.post("/:model", bearerAuth, acl("create"), handleCreate);
+router.put("/:model/:id", bearerAuth, acl("update"), handleUpdate);
+router.delete("/:model/:id", bearerAuth, acl("delete"), handleDelete);
+router.patch("/:model/:id", bearerAuth, acl("delete"), handleUpdate);
 
 async function handleGetAll(req, res) {
   let allRecords = await req.model.get();
@@ -54,11 +59,20 @@ async function handleUpdate(req, res) {
   res.status(200).json(updatedRecord);
 }
 
+async function handleAddToCart(req, res) {
+  //? /cart route does bearer auth so that users can only access their own carts, then returns a user object.
+  //* */ item is only listed by name because cart is array of strings.
+  const item = req.body.name;
+  //* update User Model because user collection does not have this functionality */
+  let updatedRecord = await users.addToCart(req.user, item);
+  //* return updated user */
+  res.status(200).json(updatedRecord);
+}
+
 async function handleDelete(req, res) {
   let id = req.params.id;
   let deletedRecord = await req.model.delete(id);
   res.status(200).json(deletedRecord);
 }
-
 
 module.exports = router;
