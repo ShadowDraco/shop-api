@@ -8,12 +8,17 @@ let token = null;
 
 // allow token to be updated
 const updateToken = (newToken) => {
-  token = token;
+  token = newToken;
 };
 
 const doGetVRoute = async () => {
   console.log("Search the store!".blue);
-  console.table(await GetVRoute(token, updateToken));
+  // pass the token and update it if they use v2.
+
+  const [data, newToken] = await GetVRoute(token);
+
+  updateToken(newToken);
+  console.table(data);
 };
 
 console.log("<--- GO ON A SHOPPING SPREE --->".america);
