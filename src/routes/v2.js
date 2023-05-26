@@ -27,6 +27,7 @@ router.param("model", (req, res, next) => {
 
 //? Users can only add to their own cart. Bearer authorizes and returns user, handleAdd.. does the adding
 router.post("/add-to-cart", bearerAuth, handleAddToCart);
+router.get("/view-cart", bearerAuth, handleViewCart);
 
 router.get("/:model", bearerAuth, handleGetAll);
 router.get("/:model/:id", bearerAuth, handleGetOne);
@@ -67,6 +68,12 @@ async function handleAddToCart(req, res) {
   let updatedRecord = await users.addToCart(req.user, item);
   //* return updated user */
   res.status(200).json(updatedRecord);
+}
+
+async function handleViewCart(req, res) {
+  let userCart = await users.getCart(req.user);
+  console.log(userCart);
+  res.status(200).json(userCart);
 }
 
 async function handleDelete(req, res) {

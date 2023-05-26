@@ -9,7 +9,7 @@ const { input, select } = require("@inquirer/prompts");
 const { Separator } = require("@inquirer/select");
 
 const chooseRoute = async (token) => {
-  const answer = await select({
+  let answer = await select({
     message: "\n\nSelect a route",
     choices: [
       {
@@ -32,6 +32,26 @@ const chooseRoute = async (token) => {
     const username = await input({ message: "Enter your username:" });
     const password = await input({ message: "Enter your password:" });
     token = await validateUser(username, password);
+  }
+
+  if (answer === "cart") {
+    const viewOrAdd = await select({
+      message: "\n\nView or add to cart?",
+      choices: [
+        {
+          name: "View",
+          value: "view",
+          description: "View your cart",
+        },
+        {
+          name: "Add",
+          value: "add",
+          description: "Add to your cart",
+        },
+        new Separator(),
+      ],
+    });
+    answer = `${viewOrAdd}-${answer}`;
   }
 
   return [answer, token];

@@ -73,14 +73,15 @@ const userModel = (sequelize, DataTypes) => {
     try {
       //* Update CART */
       //? declare a new array from old one
-      let newCart = Object.assign([], this.cart);
-      //? update the new array
-      newCart.push(item);
-      //* Update the user by overwriting old array with new one */
+
       const foundUser = await this.findOne({
         where: { username: user.username },
       });
+      let newCart = Object.assign([], foundUser.cart);
+      //? update the new array
+      newCart.push(item);
 
+      //* Update the user by overwriting old array with new one */
       return foundUser.update({ cart: newCart });
     } catch (e) {
       console.log("\nerror adding to Cart in user model\n");
@@ -88,8 +89,14 @@ const userModel = (sequelize, DataTypes) => {
     }
   };
 
-  model.getCart = async function () {
-    return this.cart;
+  model.getCart = async function (user) {
+    console.log("user model getting cart");
+
+    const foundUser = await this.findOne({
+      where: { username: user.username },
+    });
+    console.log(foundUser.cart);
+    return foundUser.cart;
   };
 
   return model;

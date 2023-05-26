@@ -2,6 +2,7 @@
 const colors = require("colors");
 
 const GetVRoute = require("./getVRoute");
+const ViewCartRoute = require("./ViewCart");
 const AddToCartRoute = require("./AddToCart");
 const chooseRoute = require("./choosePath");
 
@@ -23,7 +24,15 @@ const doGetVRoute = async () => {
   console.table(data);
 };
 
-const doAddToCartRoute = async () => {
+const doViewCart = async () => {
+  console.log("View your cart!".blue);
+  // pass the token and update it if they use v2.
+  const data = await ViewCartRoute(token);
+
+  console.table(data);
+};
+
+const doAddToCart = async () => {
   console.log("Add to your cart!".blue);
   // pass the token and update it if they use v2.
   const data = await AddToCartRoute(token);
@@ -41,7 +50,11 @@ const shop = async () => {
   if (route === "api") {
     await doGetVRoute();
   } else {
-    await doAddToCartRoute();
+    if (route === "view-cart") {
+      await doViewCart();
+    } else if (route === "add-cart") {
+      await doAddToCart();
+    }
   }
 
   shop();
