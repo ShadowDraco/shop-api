@@ -3,6 +3,8 @@ const colors = require("colors");
 
 const GetVRoute = require("./getVRoute");
 
+let token = null;
+
 const doGetVRoute = async () => {
   console.log("Search the store!".blue);
   console.table(await GetVRoute());
@@ -17,3 +19,5 @@ const shop = async () => {
 };
 
 shop();
+
+module.exports = token;

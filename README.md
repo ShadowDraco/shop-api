@@ -45,3 +45,5 @@ try the shopping with `npm run shop`!!
 #### Tests
 
 to run tests, after `npm i`, run `npm test`
+
+#### ![UML](./assets/Lab9.png)
