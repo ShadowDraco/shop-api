@@ -8,7 +8,7 @@ const validateUser = require("./validateUser");
 /*
   //* This prompt guides the user through requesting data from /api/{1/2} /
 */
-let token;
+
 const { input, select } = require("@inquirer/prompts");
 const { Separator } = require("@inquirer/select");
 
@@ -116,7 +116,8 @@ const UserGetPrompt = async (token) => {
   const amount = await chooseOneOrAll();
 
   const data = await getData(route, model, amount, newToken);
-  console.table(data);
+
+  return [data, newToken];
 };
 
 module.exports = UserGetPrompt;
