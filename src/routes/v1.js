@@ -12,10 +12,8 @@ router.param("model", (req, res, next) => {
     //* If the model being searched for is the conflicted one set it to the right model */
     if (modelName === "users") {
       req.model = userModule;
-    } else if (modelName === "requests") {
-      req.model = dataModules[modelName];
     } else {
-      next("Access Denied");
+      req.model = dataModules[modelName];
     }
     next();
   } else {

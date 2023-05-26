@@ -11,7 +11,8 @@
     "db:create": "sequelize db:create",
     "watch": "NODE_ENV=development nodemon index.js",
     "test:watch": "NODE_ENV=test jest --watchAll",
-    "test": "NODE_ENV=test jest"
+    "test": "NODE_ENV=test jest --coverage --verbose",
+    "shop": "node ./src/inquirer"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +23,7 @@
     "axios": "^1.4.0",
     "base-64": "^1.0.0",
     "bcrypt": "^5.0.0",
+    "colors": "^1.4.0",
     "cors": "^2.8.5",
     "dotenv": "^8.6.0",
     "eslint": "^8.41.0",
