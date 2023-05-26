@@ -37,7 +37,7 @@ const chooseRoute = async () => {
   if (!token && answer === "v2") {
     const username = await input({ message: "Enter your username:" });
     const password = await input({ message: "Enter your password:" });
-    token = validateUser(username, password);
+    token = await validateUser(username, password);
   }
 
   return answer;
@@ -86,7 +86,7 @@ const chooseOneOrAll = async () => {
 };
 
 const getData = async (route, model, amount) => {
-  //* Get the previously chosen model at the previously chosen route */
+  //? Get the previously chosen model at the previously chosen route */
 
   try {
     let response;
@@ -95,19 +95,19 @@ const getData = async (route, model, amount) => {
     if (amount === "all") {
       response = await axios.get(
         `${process.env.API_URL}/api/${route}/${model}`,
-        { headers: { authorization: `Bearer ${token ? token : ""}` } }
+        { headers: { authorization: `Bearer ${token}` } }
       );
     } else {
       const ID = await input({ message: "Enter the item's ID:" });
 
       response = await axios.get(`${API_URL}/api/${route}/${model}/${ID}`, {
-        headers: { authorization: `Bearer ${token ? token : ""}` },
+        headers: { authorization: `Bearer ${token}` },
       });
     }
 
     return response.data;
   } catch (error) {
-    console.log("\n\nerror getting data from v1: ".red, error.message);
+    console.log("\nerror getting data from v2: ".red, error.message);
   }
 };
 

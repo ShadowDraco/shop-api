@@ -14,6 +14,7 @@ const shop = async () => {
   await doGetVRoute();
 
   shop();
+  debugger;
 };
 
 shop();
