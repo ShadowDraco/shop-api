@@ -1,9 +1,18 @@
+const colors = require("colors");
+
 const axios = require("axios");
 require("dotenv").config();
 const API_URL = process.env.API_URL || "http://localhost:3001";
 
+const validateUser = require("./validateUser");
+/*
+  //* This prompt guides the user through requesting data from /api/{1/2} /
+*/
+
 const { input, select } = require("@inquirer/prompts");
 const { Separator } = require("@inquirer/select");
+
+let token;
 
 const chooseRoute = async () => {
   const answer = await select({
@@ -23,22 +32,30 @@ const chooseRoute = async () => {
     ],
   });
 
+  //! If the user has not validated their login at least once on this 'shopping spree' make them.
+
+  if (!token && answer === "v2") {
+    const username = await input({ message: "Enter your username:" });
+    const password = await input({ message: "Enter your password:" });
+    token = validateUser(username, password);
+  }
+
   return answer;
 };
 
 const chooseModel = async () => {
   const answer = await select({
-    message: "Select an item",
+    message: "Select a Path",
     choices: [
       {
         name: "Clothes",
         value: "clothes",
-        description: "choose the clothes model",
+        description: "Search for clothes",
       },
       {
         name: "Requests",
         value: "requests",
-        description: "choose the requests model",
+        description: "Request a new item",
       },
       new Separator(),
     ],
@@ -77,18 +94,20 @@ const getData = async (route, model, amount) => {
     //* Check if they want everything or one thing */
     if (amount === "all") {
       response = await axios.get(
-        `${process.env.API_URL}/api/${route}/${model}`
+        `${process.env.API_URL}/api/${route}/${model}`,
+        { headers: { authorization: `Bearer ${token ? token : ""}` } }
       );
     } else {
       const ID = await input({ message: "Enter the item's ID:" });
 
-      response = await axios.get(`${API_URL}/api/${route}/${model}/${ID}`);
+      response = await axios.get(`${API_URL}/api/${route}/${model}/${ID}`, {
+        headers: { authorization: `Bearer ${token ? token : ""}` },
+      });
     }
 
-    console.log(response);
     return response.data;
   } catch (error) {
-    console.log("\n\nerror getting data from v1", error);
+    console.log("\n\nerror getting data from v1: ".red, error.message);
   }
 };
 
@@ -97,10 +116,8 @@ const UserGetPrompt = async () => {
   const model = await chooseModel();
   const amount = await chooseOneOrAll();
 
-  console.log(route, model, amount);
-
-  const data = getData(route, model, amount);
-  return data;
+  const data = await getData(route, model, amount);
+  console.table(data);
 };
 
 module.exports = UserGetPrompt;

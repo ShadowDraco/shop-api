@@ -1,7 +1,19 @@
-const GetVRoute = require("./GetVRoute");
+"use strict";
+const colors = require("colors");
+
+const GetVRoute = require("./getVRoute");
 
 const doGetVRoute = async () => {
+  console.log("Search the store!".blue);
   console.table(await GetVRoute());
 };
 
-doGetVRoute();
+console.log("<--- GO ON A SHOPPING SPREE --->".america);
+
+const shop = async () => {
+  await doGetVRoute();
+
+  shop();
+};
+
+shop();
