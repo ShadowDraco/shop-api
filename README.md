@@ -47,3 +47,30 @@ try the shopping with `npm run shop`!!
 to run tests, after `npm i`, run `npm test`
 
 #### ![UML](./assets/Lab9.png)
+
+##### User Stories
+
+- User Story 1: User Registration
+As a potential customer,
+I want to be able to create an account on the back-end server application,
+So that I can order clothes and access other features.
+
+- User Story 2: User Login
+As a registered user,
+I want to be able to log in to the back-end server application,
+So that I can access my account and place orders.
+
+- User Story 3: User Roles and Permissions
+As an administrator,
+I want to assign roles and permissions to users,
+So that I can control their access to the database and application functionality.
+
+- User Story 4: Order Placement
+As a customer,
+I want to be able to place orders for clothes through the back-end server application,
+So that I can purchase the items I desire.
+
+- User Story 5: Item Request
+As a customer,
+I want to be able to request new items that are not currently available in the store,
+So that I can purchase a broader range of clothes.
